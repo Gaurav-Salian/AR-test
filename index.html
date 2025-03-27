@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Camera Test</title>
+    <title>AR Camera zoTest</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -36,7 +36,7 @@
     </style>
 </head>
 <body>
-    <div id="zoom-level">Zoom: 1</div>
+    <div id="zoom-level">FOV: 90</div>
     <div id="zoom-controls">
         <button id="zoom-in">Zoom In</button>
         <button id="zoom-out">Zoom Out</button>
@@ -46,19 +46,19 @@
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; sourceWidth: 240; sourceHeight: 180; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
+        arjs="sourceType: webcam; sourceWidth: 160; sourceHeight: 120; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
         
-        <!-- Static Image in Front of Camera -->
+        <!-- Static Image Adjusted for Zoomed View -->
         <a-image
             src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-            position="0 0 -2"
-            width="1"
-            height="1"
+            position="0 -0.5 -1"  <!-- Lowered and closer to fit screen -->
+            width="0.5"           <!-- Smaller width -->
+            height="0.5"          <!-- Smaller height -->
             rotation="0 0 0">
         </a-image>
 
         <!-- Camera -->
-        <a-entity id="camera" camera="fov: 90; zoom: 1;"></a-entity>
+        <a-entity id="camera" camera="fov: 90;"></a-entity>
     </a-scene>
 
     <script>
@@ -67,23 +67,25 @@
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const zoomLevelText = document.getElementById('zoom-level');
-        let currentZoom = 1;
+        let currentFov = 90; // Start with wide FOV
 
-        // Zoom functions
-        function updateZoom() {
-            camera.setAttribute('camera', 'zoom', currentZoom);
-            zoomLevelText.textContent = `Zoom: ${currentZoom.toFixed(1)}`;
-            console.log('Zoom updated to:', currentZoom);
+        // Update FOV function
+        function updateFov() {
+            camera.setAttribute('camera', 'fov', currentFov);
+            camera.components.camera.updateProjectionMatrix(); // Force update
+            zoomLevelText.textContent = `FOV: ${currentFov}`;
+            console.log('FOV updated to:', currentFov);
         }
 
+        // Zoom controls
         zoomInBtn.addEventListener('click', () => {
-            currentZoom += 0.2;
-            updateZoom();
+            currentFov = Math.max(20, currentFov - 10); // Narrower FOV = zoom in
+            updateFov();
         });
 
         zoomOutBtn.addEventListener('click', () => {
-            currentZoom = Math.max(0.2, currentZoom - 0.2); // Minimum zoom 0.2
-            updateZoom();
+            currentFov = Math.min(120, currentFov + 10); // Wider FOV = zoom out
+            updateFov();
         });
 
         // Log video feed
