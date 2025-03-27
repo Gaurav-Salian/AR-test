@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Invitation</title>
+    <title>ARR QR Invitation</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -20,22 +20,35 @@
             font-size: 20px;
             color: #333;
         }
+        #debug-text {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
+    <!-- Debug Text -->
+    <div id="debug-text">Looking for marker...</div>
+
     <!-- AR Scene -->
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; debugUIEnabled: false;">
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
         
         <!-- Marker (QR code triggers this) -->
         <a-marker preset="hiro">
             <!-- AR Sample Image -->
             <a-image
                 src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-                position="0 0.5 0"  <!-- Raised slightly above the marker -->
-                scale="0.5 0.5 0.5" <!-- Reduced size to fit in view -->
+                position="0 0.1 0"  <!-- Closer to marker, slightly raised -->
+                width="0.5"         <!-- Explicit width in meters -->
+                height="0.5"        <!-- Explicit height in meters -->
                 rotation="0 0 0">
             </a-image>
         </a-marker>
@@ -45,7 +58,22 @@
     </a-scene>
 
     <script>
-        console.log("AR Scene Loaded with Sample Image");
+        // Debug marker detection
+        AFRAME.registerComponent('marker-debug', {
+            init: function () {
+                this.el.addEventListener('markerFound', function () {
+                    document.getElementById('debug-text').innerText = 'Marker detected!';
+                    console.log('Marker found');
+                });
+                this.el.addEventListener('markerLost', function () {
+                    document.getElementById('debug-text').innerText = 'Marker lost. Looking for marker...';
+                    console.log('Marker lost');
+                });
+            }
+        });
+
+        // Attach the debug component to the scene
+        document.querySelector('a-scene').setAttribute('marker-debug', '');
     </script>
 </body>
 </html>
