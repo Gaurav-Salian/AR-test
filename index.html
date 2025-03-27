@@ -22,16 +22,14 @@
         <!-- Marker with Layered Content -->
         <a-marker id="marker1" type='pattern' url='markers/pattern-Capture.patt'>
             <!-- Background Layer (farthest) -->
-            <a-plane position="0 0 2" rotation="-90 0 0" scale="4 4 1" material="src:#background"></a-plane>
+            <a-plane position="0 0 6" rotation="-90 0 0" scale="4 4 1" material="src:#background"></a-plane>
 
             <!-- Title Layer (middle) -->
-            <a-plane position="0 0.5 1" rotation="-90 0 0" scale="2 1 1" material="src:#title; transparent:true"></a-plane>
+            <a-plane position="0 0 4" rotation="-90 0 0" scale="4 4 1" material="src:#title; transparent:true"></a-plane>
 
-            <!-- Foreground Images (closest) -->
-            <a-plane position="-0.5 0.3 0" rotation="-90 0 0" scale="0.5 0.5 1" material="src:#image1; transparent:true"
-                     animation="property: position; to: -0.5 0.4 0; dur: 2000; dir: alternate; loop: true"></a-plane>
-            <a-plane position="0.5 0.3 0" rotation="-90 0 0" scale="0.5 0.5 1" material="src:#image2; transparent:true"
-                     animation="property: position; to: 0.5 0.4 0; dur: 2000; dir: alternate; loop: true"></a-plane>
+            <!-- Foreground Images (closer layers) -->
+            <a-plane position="0 0 2" rotation="-90 0 0" scale="4 4 1" material="src:#image1; transparent:true"></a-plane>
+            <a-plane position="0 0 0" rotation="-90 0 0" scale="4 4 1" material="src:#image2; transparent:true"></a-plane>
         </a-marker>
 
         <!-- Camera -->
