@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Camera Tfsdest</title>
+    <title>AR QR Invitation</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -33,16 +33,14 @@
             padding: 5px;
             font-family: Arial, sans-serif;
         }
-        #video-feed {
+        #debug-text {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 160px;
-            height: 120px;
-            border: 1px solid white;
-            z-index: 10;
-            opacity: 0.7;
-            pointer-events: none; /* Prevents interaction with video */
+            top: 40px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
@@ -52,7 +50,7 @@
         <button id="zoom-in">Zoom In</button>
         <button id="zoom-out">Zoom Out</button>
     </div>
-    <video id="video-feed" autoplay playsinline></video>
+    <div id="debug-text">Looking for Hiro marker...</div>
 
     <!-- AR Scene -->
     <a-scene
@@ -60,14 +58,16 @@
         embedded
         arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 360; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
         
-        <!-- Static Image -->
-        <a-image
-            src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-            position="0 -0.8 -0.5"
-            width="0.3"
-            height="0.3"
-            rotation="0 0 0">
-        </a-image>
+        <!-- Hiro Marker -->
+        <a-marker preset="hiro">
+            <a-image
+                src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
+                position="0 0.1 0"  <!-- Slightly above marker -->
+                width="0.5"         <!-- Larger but fits -->
+                height="0.5"
+                rotation="0 0 0">
+            </a-image>
+        </a-marker>
 
         <!-- Camera -->
         <a-entity id="camera" camera="fov: 120;"></a-entity>
@@ -79,6 +79,7 @@
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const zoomLevelText = document.getElementById('zoom-level');
+        const debugText = document.getElementById('debug-text');
         let currentFov = 120;
 
         // Update FOV for full-screen AR camera
@@ -100,14 +101,20 @@
             updateFov();
         });
 
-        // Debug video feed (front camera)
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-            .then(stream => {
-                const video = document.getElementById('video-feed');
-                video.srcObject = stream;
-                console.log('Debug video feed started (front camera)');
-            })
-            .catch(err => console.error('Error accessing webcam:', err));
+        // Marker detection debug
+        AFRAME.registerComponent('marker-debug', {
+            init: function () {
+                this.el.addEventListener('markerFound', () => {
+                    debugText.textContent = 'Hiro marker detected!';
+                    console.log('Marker found');
+                });
+                this.el.addEventListener('markerLost', () => {
+                    debugText.textContent = 'Looking for Hiro marker...';
+                    console.log('Marker lost');
+                });
+            }
+        });
+        document.querySelector('a-scene').setAttribute('marker-debug', '');
 
         // Log AR.js video feed
         window.addEventListener('arjs-video-loaded', () => {
