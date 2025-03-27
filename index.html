@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Camera Test</title>
+    <title>AR Camera Tfsdest</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -42,6 +42,7 @@
             border: 1px solid white;
             z-index: 10;
             opacity: 0.7;
+            pointer-events: none; /* Prevents interaction with video */
         }
     </style>
 </head>
@@ -57,14 +58,14 @@
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; sourceWidth: 160; sourceHeight: 120; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
+        arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 360; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
         
-        <!-- Static Image Adjusted for Mobile -->
+        <!-- Static Image -->
         <a-image
             src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-            position="0 -0.8 -0.5"  <!-- Lowered and very close -->
-            width="0.3"            <!-- Tiny width -->
-            height="0.3"           <!-- Tiny height -->
+            position="0 -0.8 -0.5"
+            width="0.3"
+            height="0.3"
             rotation="0 0 0">
         </a-image>
 
@@ -78,9 +79,9 @@
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const zoomLevelText = document.getElementById('zoom-level');
-        let currentFov = 120; // Start with max wideness
+        let currentFov = 120;
 
-        // Update FOV function
+        // Update FOV for full-screen AR camera
         function updateFov() {
             camera.setAttribute('camera', 'fov', currentFov);
             camera.components.camera.updateProjectionMatrix();
@@ -99,12 +100,12 @@
             updateFov();
         });
 
-        // Access webcam feed for debug
-        navigator.mediaDevices.getUserMedia({ video: true })
+        // Debug video feed (front camera)
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
             .then(stream => {
                 const video = document.getElementById('video-feed');
                 video.srcObject = stream;
-                console.log('Video feed for debugging started');
+                console.log('Debug video feed started (front camera)');
             })
             .catch(err => console.error('Error accessing webcam:', err));
 
