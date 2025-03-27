@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Invitation</title>
+    <title>AR QR zoommm</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -20,16 +20,35 @@
             padding: 5px;
             font-family: Arial, sans-serif;
         }
+        #zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        #zoom-controls button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="debug-text">Looking for marker...</div>
 
+    <!-- Zoom Controls -->
+    <div id="zoom-controls">
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+    </div>
+
     <!-- AR Scene -->
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; sourceWidth: 320; sourceHeight: 240; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
+        arjs="sourceType: webcam; sourceWidth: 240; sourceHeight: 180; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
         
         <!-- Hiro Marker -->
         <a-marker preset="hiro">
@@ -42,11 +61,12 @@
             </a-image>
         </a-marker>
 
-        <!-- Camera with adjusted FOV -->
-        <a-entity camera="fov: 60; zoom: 1;"></a-entity>
+        <!-- Camera -->
+        <a-entity id="camera" camera="fov: 80; zoom: 1;"></a-entity>
     </a-scene>
 
     <script>
+        // Debug marker detection
         AFRAME.registerComponent('marker-debug', {
             init: function () {
                 this.el.addEventListener('markerFound', function () {
@@ -61,7 +81,23 @@
         });
         document.querySelector('a-scene').setAttribute('marker-debug', '');
 
-        // Log video feed details
+        // Zoom functions
+        let currentZoom = 1;
+        const camera = document.getElementById('camera');
+
+        function zoomIn() {
+            currentZoom += 0.1;
+            camera.setAttribute('camera', 'zoom', currentZoom);
+            console.log('Zoom:', currentZoom);
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.1, currentZoom - 0.1); // Prevent zoom from going too low
+            camera.setAttribute('camera', 'zoom', currentZoom);
+            console.log('Zoom:', currentZoom);
+        }
+
+        // Log video feed
         window.addEventListener('arjs-video-loaded', function () {
             console.log('AR.js video feed initialized');
         });
