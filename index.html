@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Invitation</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <title>AR QR Invitatxaion</title>
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.5/aframe/build/aframe-ar.js"></script>
     <style>
         body {
             margin: 0;
@@ -53,7 +53,7 @@
     </style>
 </head>
 <body>
-    <div id="zoom-level">FOV: 140</div>
+    <div id="zoom-level">FOV: 80</div>
     <div id="zoom-controls">
         <button id="zoom-in">Zoom In</button>
         <button id="zoom-out">Zoom Out</button>
@@ -64,69 +64,80 @@
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; sourceWidth: 320; sourceHeight: 240; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
+        arjs='trackingMethod: best; debugUIEnabled: false;'>
         
         <!-- Marker (Hiro marker triggers this) -->
         <a-marker preset="hiro">
             <!-- AR Image -->
             <a-image
-                src="https://via.placeholder.com/300x200.png?text=Happy+Invitation"
-                position="0 0.1 0"  <!-- Slightly above marker -->
-                width="0.3"         <!-- Smaller to fit zoomed-out view -->
-                height="0.3"        <!-- Smaller to fit zoomed-out view -->
+                src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
+                position="0 0.1 0"
+                width="0.3"
+                height="0.3"
                 rotation="0 0 0">
             </a-image>
         </a-marker>
 
         <!-- Camera -->
-        <a-entity id="camera" camera="fov: 140;"></a-entity>
+        <a-entity id="camera" camera="fov: 80;"></a-entity>
     </a-scene>
 
     <script>
-        // Get camera and UI elements
-        const camera = document.getElementById('camera');
-        const zoomInBtn = document.getElementById('zoom-in');
-        const zoomOutBtn = document.getElementById('zoom-out');
-        const zoomLevelText = document.getElementById('zoom-level');
-        const debugText = document.getElementById('debug-text');
-        let currentFov = 140;
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get elements
+            const camera = document.getElementById('camera');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+            const zoomLevelText = document.getElementById('zoom-level');
+            const debugText = document.getElementById('debug-text');
+            let currentFov = 80; // Default FOV for older A-Frame
 
-        // Update FOV for full-screen AR camera
-        function updateFov() {
-            camera.setAttribute('camera', 'fov', currentFov);
-            camera.components.camera.updateProjectionMatrix();
-            zoomLevelText.textContent = `FOV: ${currentFov}`;
-            console.log('FOV updated to:', currentFov);
-        }
-
-        // Zoom controls
-        zoomInBtn.addEventListener('click', () => {
-            currentFov = Math.max(20, currentFov - 10); // Narrower FOV = zoom in
-            updateFov();
-        });
-
-        zoomOutBtn.addEventListener('click', () => {
-            currentFov = Math.min(160, currentFov + 10); // Wider FOV = zoom out
-            updateFov();
-        });
-
-        // Marker detection debug
-        AFRAME.registerComponent('marker-debug', {
-            init: function () {
-                this.el.addEventListener('markerFound', () => {
-                    debugText.textContent = 'Hiro marker detected!';
-                    console.log('Marker found');
-                });
-                this.el.addEventListener('markerLost', () => {
-                    debugText.textContent = 'Looking for Hiro marker...';
-                    console.log('Marker lost');
-                });
+            // Update FOV function
+            function updateFov() {
+                if (camera && camera.components.camera) {
+                    camera.setAttribute('camera', 'fov', currentFov);
+                    camera.components.camera.updateProjectionMatrix();
+                    zoomLevelText.textContent = `FOV: ${currentFov}`;
+                    console.log('FOV updated to:', currentFov);
+                } else {
+                    console.error('Camera not ready yet');
+                }
             }
-        });
-        document.querySelector('a-scene').setAttribute('marker-debug', '');
 
-        // Log AR scene loaded
-        console.log("AR Scene Loaded");
+            // Zoom controls
+            zoomInBtn.addEventListener('click', () => {
+                currentFov = Math.max(20, currentFov - 10);
+                updateFov();
+            });
+
+            zoomOutBtn.addEventListener('click', () => {
+                currentFov = Math.min(120, currentFov + 10);
+                updateFov();
+            });
+
+            // Marker detection debug
+            AFRAME.registerComponent('marker-debug', {
+                init: function () {
+                    this.el.addEventListener('markerFound', () => {
+                        debugText.textContent = 'Hiro marker detected!';
+                        console.log('Marker found');
+                    });
+                    this.el.addEventListener('markerLost', () => {
+                        debugText.textContent = 'Looking for Hiro marker...';
+                        console.log('Marker lost');
+                    });
+                }
+            });
+            document.querySelector('a-scene').setAttribute('marker-debug', '');
+
+            // Log AR.js video feed
+            window.addEventListener('arjs-video-loaded', () => {
+                console.log('AR.js video feed initialized');
+            });
+
+            console.log('Script loaded');
+        });
     </script>
 </body>
 </html>
