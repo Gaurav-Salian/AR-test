@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Invitationn</title>
+    <title>AR QR Invitation</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -34,8 +34,8 @@
             <!-- AR Sample Image -->
             <a-image
                 src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-                position="0 0 0"
-                
+                position="0 0.5 0"  <!-- Raised slightly above the marker -->
+                scale="0.5 0.5 0.5" <!-- Reduced size to fit in view -->
                 rotation="0 0 0">
             </a-image>
         </a-marker>
