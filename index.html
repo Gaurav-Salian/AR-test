@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR QR Invitation</title>
+    <title>AR QR Invdsfsdfgdfgitation</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -11,115 +11,41 @@
             margin: 0;
             overflow: hidden;
         }
-        #zoom-controls {
+        .arjs-loader {
             position: absolute;
-            bottom: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-        }
-        #zoom-controls button {
-            padding: 10px;
-            font-size: 16px;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-        #zoom-level {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px;
+            transform: translate(-50%, -50%);
             font-family: Arial, sans-serif;
-        }
-        #debug-text {
-            position: absolute;
-            top: 40px;
-            left: 10px;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px;
-            font-family: Arial, sans-serif;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="zoom-level">FOV: 120</div>
-    <div id="zoom-controls">
-        <button id="zoom-in">Zoom In</button>
-        <button id="zoom-out">Zoom Out</button>
-    </div>
-    <div id="debug-text">Looking for Hiro marker...</div>
-
     <!-- AR Scene -->
     <a-scene
         vr-mode-ui="enabled: false"
         embedded
-        arjs="sourceType: webcam; sourceWidth: 480; sourceHeight: 360; displayWidth: 640; displayHeight: 480; debugUIEnabled: false;">
+        arjs="sourceType: webcam; debugUIEnabled: false;">
         
-        <!-- Hiro Marker -->
+        <!-- Marker (QR code triggers this) -->
         <a-marker preset="hiro">
+            <!-- AR Image -->
             <a-image
                 src="https://media.tacdn.com/media/attractions-splice-spp-674x446/07/b7/3e/96.jpg"
-                position="0 0.1 0"  <!-- Slightly above marker -->
-                width="0.5"         <!-- Larger but fits -->
-                height="0.5"
+                position="0 0 0"
+                scale="1 1 1"
                 rotation="0 0 0">
             </a-image>
         </a-marker>
 
         <!-- Camera -->
-        <a-entity id="camera" camera="fov: 120;"></a-entity>
+        <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // Get camera and UI elements
-        const camera = document.getElementById('camera');
-        const zoomInBtn = document.getElementById('zoom-in');
-        const zoomOutBtn = document.getElementById('zoom-out');
-        const zoomLevelText = document.getElementById('zoom-level');
-        const debugText = document.getElementById('debug-text');
-        let currentFov = 120;
-
-        // Update FOV for full-screen AR camera
-        function updateFov() {
-            camera.setAttribute('camera', 'fov', currentFov);
-            camera.components.camera.updateProjectionMatrix();
-            zoomLevelText.textContent = `FOV: ${currentFov}`;
-            console.log('FOV updated to:', currentFov);
-        }
-
-        // Zoom controls
-        zoomInBtn.addEventListener('click', () => {
-            currentFov = Math.max(20, currentFov - 10);
-            updateFov();
-        });
-
-        zoomOutBtn.addEventListener('click', () => {
-            currentFov = Math.min(140, currentFov + 10);
-            updateFov();
-        });
-
-        // Marker detection debug
-        AFRAME.registerComponent('marker-debug', {
-            init: function () {
-                this.el.addEventListener('markerFound', () => {
-                    debugText.textContent = 'Hiro marker detected!';
-                    console.log('Marker found');
-                });
-                this.el.addEventListener('markerLost', () => {
-                    debugText.textContent = 'Looking for Hiro marker...';
-                    console.log('Marker lost');
-                });
-            }
-        });
-        document.querySelector('a-scene').setAttribute('marker-debug', '');
-
-        // Log AR.js video feed
-        window.addEventListener('arjs-video-loaded', () => {
-            console.log('AR.js video feed initialized');
-        });
+        // Optional: Add logic if needed
+        console.log("AR Scene Loaded");
     </script>
 </body>
 </html>
