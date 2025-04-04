@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AR Image Gallery with Smooth Sliding</title>
+    <title>AR Stacked Image Gallery wdfgith Smooth Sliding</title>
     <meta name="viewport" content="width=device-width, height=device-height">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -28,7 +28,7 @@
             }
         });
 
-        AFRAME.registerComponent('slide-gallery', {
+        AFRAME.registerComponent('stacked-gallery', {
             init: function () {
                 this.images = [
                     this.el.querySelector('#plane1'),
@@ -36,14 +36,14 @@
                     this.el.querySelector('#plane3'),
                     this.el.querySelector('#plane4')
                 ];
-                this.currentIndex = 0;
                 this.targetPositions = [];
                 this.isAnimating = false;
 
-                // Initial positions (all planes start off-screen to the right)
+                // Initial stacking along y-axis (front to back)
                 this.images.forEach((img, index) => {
-                    img.setAttribute('position', `${2 * (index - this.currentIndex)} 0 0`);
-                    this.targetPositions[index] = img.getAttribute('position');
+                    const yPos = 6 - index * 0.1; // Front at y=6, slightly spaced
+                    img.setAttribute('position', `0 ${yPos} 0`);
+                    this.targetPositions[index] = { x: 0, y: yPos, z: 0 };
                 });
 
                 // Touch event listeners
@@ -57,17 +57,36 @@
                     this.images.forEach((img, index) => {
                         const currentPos = img.getAttribute('position');
                         const targetPos = this.targetPositions[index];
-                        const newX = THREE.Math.lerp(currentPos.x, targetPos.x, 0.1); // Smooth interpolation
-                        img.setAttribute('position', `${newX} 0 0`);
-                        if (Math.abs(newX - targetPos.x) < 0.01) this.isAnimating = false; // Stop when close enough
+                        const newX = THREE.Math.lerp(currentPos.x, targetPos.x, 0.1);
+                        const newY = THREE.Math.lerp(currentPos.y, targetPos.y, 0.1);
+                        img.setAttribute('position', `${newX} ${newY} 0`);
+                        if (Math.abs(newX - targetPos.x) < 0.01 && Math.abs(newY - targetPos.y) < 0.01) {
+                            this.isAnimating = false;
+                        }
                     });
                 }
             },
             updatePositions: function () {
+                // Move the front image to the back with a left slide
+                const frontImage = this.images.shift(); // Remove front image
+                this.images.push(frontImage); // Add it to the back
+
+                // Update target positions
                 this.images.forEach((img, index) => {
-                    const offset = index - this.currentIndex;
-                    this.targetPositions[index] = { x: offset * 2, y: 0, z: 0 }; // Spacing of 2 units
+                    const yPos = 6 - index * 0.1; // Stack from y=6 downward
+                    if (index === this.images.length - 1) {
+                        // The image moving to the back slides left first
+                        this.targetPositions[this.images.indexOf(img)] = { x: -2, y: yPos, z: 0 };
+                    } else {
+                        this.targetPositions[this.images.indexOf(img)] = { x: 0, y: yPos, z: 0 };
+                    }
                 });
+
+                // After sliding left, reset x-position for the back image
+                setTimeout(() => {
+                    this.targetPositions[this.images.length - 1].x = 0;
+                }, 300); // Delay to allow left slide before snapping back
+
                 this.isAnimating = true;
             },
             onTouchStart: function (event) {
@@ -81,14 +100,7 @@
                 const touchEndX = event.changedTouches[0].clientX;
                 const deltaX = touchEndX - this.touchStartX;
 
-                if (Math.abs(deltaX) > 50) { // Minimum swipe distance
-                    if (deltaX > 0 && this.currentIndex > 0) {
-                        // Swipe right: move to previous image
-                        this.currentIndex--;
-                    } else if (deltaX < 0 && this.currentIndex < this.images.length - 1) {
-                        // Swipe left: move to next image
-                        this.currentIndex++;
-                    }
+                if (Math.abs(deltaX) > 50 && deltaX < 0) { // Swipe left only
                     this.updatePositions();
                 }
             }
@@ -105,10 +117,10 @@
             <img id="image4" src="images/layer_05_1920x1080.png">
         </a-assets>
 
-        <!-- Marker with Sliding Gallery -->
+        <!-- Marker with Stacked Gallery -->
         <a-marker id="marker1" type='pattern' url='markers/pattern-Capture.patt' smooth-tracking>
-            <!-- Group with slide-gallery component -->
-            <a-entity position="0 0 0" slide-gallery>
+            <!-- Group with stacked-gallery component -->
+            <a-entity position="0 0 0" stacked-gallery>
                 <!-- Image Layers -->
                 <a-plane id="plane1" rotation="-90 0 0" scale="2 2 1" 
                          material="src:#image1; transparent:true; opacity:1"></a-plane>
