@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AR Stacked Image Gallery wdfgith Smooth Sliding</title>
+    <title>AR Stacked Image Gallery with Smooth Sliding</title>
     <meta name="viewport" content="width=device-width, height=device-height">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -17,7 +17,7 @@
                 this.rotation = new THREE.Euler();
             },
             tick: function (time, delta) {
-                const smoothingFactor = 0.1;
+                const smoothingFactor = 0.001;
                 const obj = this.el.object3D;
                 this.position.lerp(obj.position, smoothingFactor);
                 obj.position.copy(this.position);
