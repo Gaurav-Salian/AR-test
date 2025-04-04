@@ -17,7 +17,7 @@
                 this.rotation = new THREE.Euler();
             },
             tick: function (time, delta) {
-                const smoothingFactor = 0.001;
+                const smoothingFactor = 0.01;
                 const obj = this.el.object3D;
                 this.position.lerp(obj.position, smoothingFactor);
                 obj.position.copy(this.position);
